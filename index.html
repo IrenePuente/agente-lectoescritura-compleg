@@ -7,7 +7,1086 @@
 <body>
 
 <h1>Base de conocimiento – Agente Copilot de lectoescritura</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base de Conocimiento — PRECOL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:        #1a1814;
+      --paper:      #faf8f4;
+      --cream:      #f0ebe1;
+      --accent:     #2d5a3d;
+      --accent-lt:  #e8f0ea;
+      --rule:       #c9c0b0;
+      --warm-grey:  #8a8070;
+      --highlight:  #f5e6c8;
+      --red-note:   #8b3a2a;
+    }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-weight: 300;
+      font-size: 17px;
+      line-height: 1.75;
+      color: var(--ink);
+      background: var(--paper);
+      padding: 0;
+    }
+
+    /* ── Layout ── */
+    .page-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .site-header .kicker {
+      font-family: 'Source Serif 4', serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--warm-grey);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .site-header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--accent);
+    }
+    .site-header .subtitle {
+      margin-top: 0.6rem;
+      color: var(--warm-grey);
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+
+    /* ── Table of contents ── */
+    .toc {
+      background: var(--cream);
+      border-left: 4px solid var(--accent);
+      padding: 1.4rem 1.8rem;
+      margin-bottom: 3rem;
+      border-radius: 0 4px 4px 0;
+    }
+    .toc h2 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--warm-grey);
+      margin-bottom: 0.8rem;
+    }
+    .toc ol {
+      list-style: none;
+      counter-reset: toc-counter;
+    }
+    .toc li {
+      counter-increment: toc-counter;
+      padding: 0.2rem 0;
+      font-size: 0.95rem;
+    }
+    .toc li::before {
+      content: counter(toc-counter, upper-roman) ".  ";
+      font-weight: 600;
+      color: var(--accent);
+      font-variant-numeric: lining-nums;
+    }
+    .toc a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--rule);
+    }
+    .toc a:hover { color: var(--accent); border-bottom-style: solid; }
+
+    /* ── Sections ── */
+    .section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 1rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.8rem;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 0.6rem;
+      margin-bottom: 1.8rem;
+    }
+    .section-header .num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 400;
+      color: var(--rule);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    /* ── Sub-sections ── */
+    h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 2rem 0 0.7rem;
+      padding-left: 0.8rem;
+      border-left: 3px solid var(--accent);
+    }
+    h4 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--warm-grey);
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    p { margin-bottom: 1rem; }
+
+    /* ── Lists ── */
+    ul, ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    li { margin-bottom: 0.3rem; }
+    li strong { color: var(--accent); }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      background: white;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    thead {
+      background: var(--accent);
+      color: white;
+    }
+    thead th {
+      padding: 0.7rem 1rem;
+      text-align: left;
+      font-family: 'Source Serif 4', serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    tbody tr:nth-child(even) { background: var(--cream); }
+    tbody td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* ── Callout boxes ── */
+    .callout {
+      background: var(--accent-lt);
+      border: 1px solid #b0c9b8;
+      border-radius: 4px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .callout.warning {
+      background: var(--highlight);
+      border-color: #d4a96a;
+    }
+    .callout.red {
+      background: #fdf0ec;
+      border-color: #d4907a;
+    }
+    .callout p:last-child { margin-bottom: 0; }
+    .callout strong { color: var(--accent); }
+    .callout.warning strong { color: #8a6020; }
+    .callout.red strong { color: var(--red-note); }
+
+    /* ── Formula box ── */
+    .formula {
+      background: var(--ink);
+      color: #e8e0d0;
+      padding: 0.9rem 1.4rem;
+      border-radius: 4px;
+      font-family: 'Source Serif 4', serif;
+      font-size: 1rem;
+      margin: 1rem 0;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Niveles badge grid ── */
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+    .level-card {
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .level-card.riesgo  { background: #fdf0ec; border: 1px solid #d4907a; }
+    .level-card.emergente { background: var(--highlight); border: 1px solid #d4a96a; }
+    .level-card.establecido { background: var(--accent-lt); border: 1px solid #b0c9b8; }
+    .level-card .label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    .level-card.riesgo .label { color: var(--red-note); }
+    .level-card.emergente .label { color: #8a6020; }
+    .level-card.establecido .label { color: var(--accent); }
+    .level-card p { font-size: 0.88rem; margin: 0; }
+
+    /* ── Principle cards ── */
+    .principle-list { list-style: none; padding: 0; }
+    .principle-list li {
+      display: grid;
+      grid-template-columns: 2.5rem 1fr;
+      gap: 1rem;
+      align-items: start;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .principle-list li:last-child { border-bottom: none; }
+    .principle-num {
+      width: 2.2rem;
+      height: 2.2rem;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .principle-content strong { display: block; color: var(--ink); margin-bottom: 0.2rem; }
+    .principle-content p { margin: 0; font-size: 0.92rem; color: var(--warm-grey); }
+
+    /* ── FORI days ── */
+    .fori-days { display: flex; flex-direction: column; gap: 0.8rem; margin: 1rem 0; }
+    .fori-day {
+      display: grid;
+      grid-template-columns: 5rem 1fr;
+      gap: 1rem;
+      align-items: start;
+      padding: 0.8rem 1rem;
+      background: var(--cream);
+      border-radius: 4px;
+      border-left: 3px solid var(--accent);
+    }
+    .fori-day .day-label {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+    .fori-day p { margin: 0; font-size: 0.93rem; }
+
+    /* ── Competencias grid ── */
+    .comp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.2rem;
+      margin: 1.2rem 0;
+    }
+    .comp-card {
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      background: white;
+    }
+    .comp-card .comp-code {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--warm-grey);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .comp-card h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 0 0.5rem;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .comp-card p { font-size: 0.87rem; margin: 0; color: var(--warm-grey); }
+
+    /* ── Criteria accordion ── */
+    details {
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      background: white;
+    }
+    summary {
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--accent);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    summary::before {
+      content: '+';
+      width: 1.2rem;
+      height: 1.2rem;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    details[open] summary::before { content: '−'; }
+    details[open] { border-color: var(--accent); }
+    .details-body {
+      padding: 0.8rem 1rem 1rem 1rem;
+      border-top: 1px solid var(--rule);
+      font-size: 0.9rem;
+    }
+    .details-body p { margin-bottom: 0.6rem; }
+    .details-body p:last-child { margin-bottom: 0; }
+
+    /* ── Footer rule ── */
+    .doc-footer {
+      border-top: 2px solid var(--ink);
+      padding-top: 1.2rem;
+      margin-top: 4rem;
+      font-size: 0.82rem;
+      color: var(--warm-grey);
+      font-style: italic;
+    }
+
+    @media (max-width: 600px) {
+      .levels-grid { grid-template-columns: 1fr; }
+      .fori-day { grid-template-columns: 1fr; }
+      .fori-day .day-label { margin-bottom: 0.3rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- ══ HEADER ══ -->
+  <header class="site-header">
+    <span class="kicker">Base de Conocimiento · Agente Copilot</span>
+    <h1>Programa de Refuerzo de la Competencia Lectora</h1>
+    <p class="subtitle">PRECOL — Evaluación, Fluidez, Comprensión · Castejón &amp; Menéndez (2025)</p>
+  </header>
+
+  <!-- ══ TABLE OF CONTENTS ══ -->
+  <nav class="toc" aria-label="Índice">
+    <h2>Índice</h2>
+    <ol>
+      <li><a href="#evaluacion">Evaluación y elaboración del mapa lector del aula</a></li>
+      <li><a href="#fluidez">Intervención en fluidez lectora</a></li>
+      <li><a href="#comprension">Intervención en comprensión lectora</a></li>
+      <li><a href="#curriculo-infantil">Currículo de Educación Infantil</a></li>
+      <li><a href="#descriptores">Descriptores operativos de las competencias clave</a></li>
+      <li><a href="#competencias-lengua">Competencias específicas de Lengua y criterios de evaluación</a></li>
+      <li><a href="#saberes-lengua">Saberes básicos de Lengua (por ciclos)</a></li>
+      <li><a href="#oral-escrito">Del lenguaje oral al lenguaje escrito</a></li>
+    </ol>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SECCIÓN 1 · EVALUACIÓN                    -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="evaluacion">
+    <div class="section-header">
+      <span class="num">I</span>
+      <h2>Evaluación y elaboración del mapa lector del aula</h2>
+    </div>
+
+    <h3>Introducción</h3>
+    <p>El <strong>PRECOL</strong> tiene como objetivo mejorar la competencia lectora del alumnado, con especial atención a los estudiantes en situación de riesgo lector, mediante una intervención educativa sistemática liderada por el profesorado en el aula.</p>
+    <p>La evaluación es parte esencial del programa porque permite:</p>
+    <ul>
+      <li>Identificar el nivel lector inicial del alumnado.</li>
+      <li>Detectar situaciones de riesgo lector.</li>
+      <li>Diseñar una intervención educativa ajustada.</li>
+      <li>Valorar la evolución al finalizar el proceso.</li>
+    </ul>
+
+    <h3>Finalidad de la evaluación en el PRECOL</h3>
+    <p>La evaluación permite elaborar el <strong>perfil lector individual</strong> y el <strong>mapa lector del aula</strong>. Se realiza en tres fases:</p>
+    <ol>
+      <li>Evaluación inicial (antes de la intervención).</li>
+      <li>Intervención educativa ajustada.</li>
+      <li>Evaluación final (para valorar la evolución).</li>
+    </ol>
+
+    <!-- TECLE -->
+    <h3>Test Colectivo de Eficiencia Lectora (TECLE)</h3>
+    <p>Prueba colectiva de elección múltiple: el alumnado completa oraciones seleccionando la palabra correcta entre cuatro opciones. Evalúa globalmente decodificación, automatización, comprensión lectora y velocidad lectora. <strong>Duración: 5 minutos.</strong></p>
+    <div class="callout warning">
+      <p><strong>Importante:</strong> El TECLE <em>no es</em> una prueba diagnóstica, sino una prueba de detección (screening).</p>
+    </div>
+
+    <h4>Puntuación</h4>
+    <div class="formula">Puntuación = Aciertos − (Errores / 3)</div>
+    <p>Se anotan con dos decimales. Los errores son respuestas incorrectas o marcar más de una opción. Las respuestas en blanco no se cuentan como errores.</p>
+
+    <h4>Niveles de eficiencia lectora</h4>
+    <div class="levels-grid">
+      <div class="level-card establecido">
+        <span class="label">Establecido</span>
+        <p>Puntuación por encima de la media + 1 DT</p>
+      </div>
+      <div class="level-card emergente">
+        <span class="label">Emergente</span>
+        <p>Puntuaciones entre −1 DT y +1 DT</p>
+      </div>
+      <div class="level-card riesgo">
+        <span class="label">Riesgo</span>
+        <p>Puntuación por debajo de la media − 1 DT (15,9 % más bajo)</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Nivel</th><th>2.º EP</th><th>3.º EP</th><th>4.º EP</th><th>5.º EP</th><th>6.º EP / 1.º ESO</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Establecido</strong></td><td>&gt;22,99</td><td>&gt;30,26</td><td>&gt;38,79</td><td>&gt;44,34</td><td>&gt;51,52</td></tr>
+          <tr><td><strong>Emergente</strong></td><td>7,25–22,99</td><td>14,54–30,26</td><td>19,85–38,79</td><td>25,96–44,34</td><td>31,16–51,52</td></tr>
+          <tr><td><strong>Riesgo</strong></td><td>&lt;7,25</td><td>&lt;14,54</td><td>&lt;19,85</td><td>&lt;25,96</td><td>&lt;31,16</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FLUIDEZ -->
+    <h3>Evaluación de la fluidez lectora</h3>
+    <p>Se evalúa mediante: lectura de <strong>listas de palabras</strong> (PCMp), lectura de <strong>un texto</strong> durante 1 minuto (PCMt) y observación cualitativa del grado de fluidez por el profesorado.</p>
+
+    <h4>Grados de fluidez (percepción del profesorado)</h4>
+    <ul>
+      <li><strong>G1 — Fluidez imprecisa:</strong> Lectura lenta, trabada, con muchos errores de decodificación. Nivel de la palabra.</li>
+      <li><strong>G2 — Fluidez discontinua:</strong> Precisa pero sin continuidad ni entonación. Transición de la palabra a la frase.</li>
+      <li><strong>G3 — Fluidez continua no expresiva:</strong> Continua y ágil, pero sin prosodia adecuada.</li>
+      <li><strong>G4 — Fluidez expresiva:</strong> Lee como habla. Precisa, ágil, continua, expresiva.</li>
+    </ul>
+    <p>Para el perfil lector: <strong>Bajo</strong> = G1 o G2 · <strong>Medio</strong> = G3 · <strong>Alto</strong> = G4.</p>
+
+    <h4>PCMp — Palabras correctas por minuto en lista de palabras</h4>
+    <div class="formula">PCMp = (Palabras leídas en 30″ − Errores) × 2</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Nivel</th><th>2.º EP</th><th>3.º EP</th><th>4.º EP</th><th>5.º EP</th><th>6.º EP</th><th>1.º ESO</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Alto</strong></td><td>&gt;50</td><td>&gt;60</td><td>&gt;72</td><td>&gt;84</td><td>&gt;92</td><td>&gt;110</td></tr>
+          <tr><td><strong>Medio</strong></td><td>42–50</td><td>50–60</td><td>60–72</td><td>72–84</td><td>84–92</td><td>92–110</td></tr>
+          <tr><td><strong>Bajo</strong></td><td>&lt;42</td><td>&lt;50</td><td>&lt;60</td><td>&lt;72</td><td>&lt;84</td><td>&lt;92</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>PCMt — Palabras correctas por minuto en texto</h4>
+    <div class="formula">PCMt = Palabras leídas en 1 minuto − Errores</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Curso</th><th>Criterio PCMt</th><th>Rango orientativo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1.º EP</td><td>48 PCM</td><td>(25–72)</td></tr>
+          <tr><td>2.º EP</td><td>72 PCM</td><td>(45–101)</td></tr>
+          <tr><td>3.º EP</td><td>84 PCM</td><td>(58–111)</td></tr>
+          <tr><td>4.º EP</td><td>104 PCM</td><td>(75–134)</td></tr>
+          <tr><td>5.º EP</td><td>113 PCM</td><td>(83–145)</td></tr>
+          <tr><td>6.º EP</td><td>124 PCM</td><td>(95–154)</td></tr>
+          <tr><td>1.º ESO</td><td>134 PCM</td><td>(100–168)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- COMPRENSIÓN EVALUACIÓN -->
+    <h3>Evaluación de la comprensión lectora</h3>
+    <p>Se utilizan <strong>microtextos con preguntas abiertas</strong> adaptados al nivel educativo. La prueba consta de 10 textos cortos. La puntuación permite clasificar:</p>
+    <ul>
+      <li><strong>Alto:</strong> 7–10 puntos.</li>
+      <li><strong>Medio:</strong> 5–6 puntos.</li>
+      <li><strong>Bajo:</strong> menos de 5 puntos.</li>
+    </ul>
+    <p>Dos puntuaciones se recogen: total de preguntas con todas las respuestas correctas (máx. 10) y total de respuestas correctas (máx. 26, convertible a escala sobre 10).</p>
+
+    <!-- PERFIL Y MAPA -->
+    <h3>Perfil lector y mapa lector del aula</h3>
+    <p>El <strong>perfil lector individual</strong> integra los resultados de eficiencia (TECLE), fluidez (PCMp, PCMt, grado) y comprensión, situando a cada estudiante en niveles bajo / medio / alto e identificando fortalezas, debilidades y metas de aprendizaje.</p>
+    <p>El <strong>mapa lector del aula</strong> reúne todos los perfiles. Es:</p>
+    <ul>
+      <li><strong>Descriptivo:</strong> muestra el nivel lector del alumnado.</li>
+      <li><strong>Dinámico:</strong> permite comparar evaluación inicial y final.</li>
+      <li><strong>Orientativo:</strong> guía la intervención, los agrupamientos flexibles y la enseñanza multinivel.</li>
+    </ul>
+    <div class="callout">
+      <p><strong>Metas orientativas:</strong> Para el alumnado de riesgo la meta es alcanzar el nivel emergente. Para el emergente, alcanzar el establecido. Para el establecido, mantenerse.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SECCIÓN 2 · FLUIDEZ                        -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="fluidez">
+    <div class="section-header">
+      <span class="num">II</span>
+      <h2>Intervención en fluidez lectora</h2>
+    </div>
+
+    <h3>Introducción: el derecho a la fluidez lectora</h3>
+    <p>La fluidez lectora incluye tres componentes: <strong>precisión</strong>, <strong>velocidad</strong> y <strong>prosodia</strong>. Su enseñanza explícita y sistemática es necesaria a lo largo de toda la Educación Primaria y Secundaria. La fluidez insuficiente puede constituir una barrera para la comprensión y aumentar el riesgo de abandono escolar.</p>
+
+    <h3>Diez principios para enseñar fluidez lectora</h3>
+    <ul class="principle-list">
+      <li>
+        <span class="principle-num">1</span>
+        <div class="principle-content">
+          <strong>Modelo lector</strong>
+          <p>El alumnado debe escuchar una lectura fluida antes de practicar (docente, compañero, familiar, audiolibro…). La enseñanza asistida con modelo es más eficaz que la práctica sin modelo.</p>
+        </div>
+      </li>
+      <li>
+        <span class="principle-num">2</span>
+        <div class="principle-content">
+          <strong>Feedback</strong>
+          <p>Corregir errores de forma cálida para asegurar precisión. Sin precisión no hay velocidad. El feedback supone adaptación individual al nivel y ritmo del alumnado.</p>
+        </div>
+      </li>
+      <li>
+        <span class="principle-num">3</span>
+        <div class="principle-content">
+          <strong>Lecturas repetidas</strong>
+          <p>Práctica sistemática del mismo material (listas / textos) hasta cinco veces, promoviendo la elaboración de representaciones ortográficas.</p>
+        </div>
+      </li>
+      <li>
+        <span class="principle-num">4</span>
+        <div class="principle-content">
+          <strong>Lectura diaria 20–30 minutos</strong>
+          <p>Garantizar tiempo diario que incluya lectura en voz alta, especialmente para alumnado con nivel bajo.</p>
+        </div>
+      </li>
+      <li>
+        <span class="principle-num">5</span>
+        <div class="principle-content">
+          <strong>Andamiaje personalizado</strong>
+          <p>Materiales graduados en cuatro niveles: palabras → pares de palabras → frases/textos → prosodia. Seleccionar textos en la zona de fluidez próxima.</p>
+        </div>
+      </li>
+      <li>
+        <span class="principle-num">6</span>
+        <div class="principle-content">
+          <strong>Prosodia desde el inicio</strong>
+          <p>Acento, pausas, ritmo, entonación y signos de puntuación presentes desde el inicio de la enseñanza.</p>
+        </div>
+      </li>
+      <li>
+        <span class="principle-num">7</span>
+        <div class="principle-content">
+          <strong>Integrar comprensión</strong>
+          <p>Evitar trabajar la fluidez aislada. Detectar alumnado con buena velocidad pero baja comprensión.</p>
+        </div>
+      </li>
+      <li>
+        <span class="principle-num">8</span>
+        <div class="principle-content">
+          <strong>Motivación</strong>
+          <p>Metas claras, refuerzo positivo, evitar comparaciones dañinas. Plasmar visualmente el avance. La meta no es leer rápido sino leer bien.</p>
+        </div>
+      </li>
+      <li>
+        <span class="principle-num">9</span>
+        <div class="principle-content">
+          <strong>Colaboración familiar</strong>
+          <p>Estructurar a nivel de centro la colaboración de las familias para garantizar práctica lectora en casa.</p>
+        </div>
+      </li>
+      <li>
+        <span class="principle-num">10</span>
+        <div class="principle-content">
+          <strong>Trabajo en equipo de centro</strong>
+          <p>Integrar en el Proyecto Educativo y Plan Lector. Decidir qué se trabaja y cómo se organiza el aula cada curso.</p>
+        </div>
+      </li>
+    </ul>
+
+    <!-- PROGRAMA DE LA PALABRA AL TEXTO -->
+    <h3>Programa 1: «De la palabra al texto» (4 niveles)</h3>
+
+    <h4>Nivel 1–2 — Dominio de la palabra</h4>
+    <p>Secuencia recomendada (mínimo 5 lecturas por lista):</p>
+    <ol>
+      <li>Lectura 1: medir tiempo y registrar errores (sin intervenir).</li>
+      <li>Lectura 2: modelo del docente + lectura del alumno con corrección cálida (se repite hasta leer sin errores).</li>
+      <li>Lecturas 3–4: ganar velocidad manteniendo precisión.</li>
+      <li>Lectura 5: volver al orden inicial, medir tiempo final y valorar progreso; cambiar de lista.</li>
+    </ol>
+    <p>Sobre del material: <em>verde</em> (entrenada) → <em>azul</em> (dominada) → <em>rojo</em> (palabras que necesitan refuerzo).</p>
+
+    <h4>Nivel 3 — De la frase al texto</h4>
+    <p>Lectura de frases y textos en tablas para ganar continuidad y ritmo. Se proponen juegos de relectura (palmadas, sustituciones, repeticiones) para repetir el texto centrándose en fluidez.</p>
+
+    <h4>Nivel 4 — Prosodia</h4>
+    <p>Entrenar acento, pausas, segmentación, signos de puntuación, interrogación/exclamación y expresividad. Procedimiento: lectura base → modelo del docente → relecturas guiadas + textos con diálogos/teatro/poesía.</p>
+
+    <!-- PROGRAMA FORI -->
+    <h3>Programa 2: FORI — Secuencia semanal (lunes a viernes)</h3>
+    <div class="fori-days">
+      <div class="fori-day">
+        <span class="day-label">Lunes</span>
+        <p>El docente <strong>presenta el texto</strong>: conocimientos previos, vocabulario crítico, meta de lectura. Modelo de lectura del docente en voz alta mientras el alumnado sigue en silencio.</p>
+      </div>
+      <div class="fori-day">
+        <span class="day-label">Martes</span>
+        <p><strong>Lectura en eco</strong> (docente lee un fragmento, alumnado repite) + actividad de comprensión: vocabulario, sacar ideas del texto, escritura de ideas.</p>
+      </div>
+      <div class="fori-day">
+        <span class="day-label">Miércoles</span>
+        <p><strong>Lectura coral</strong> (profesorado y alumnado leen juntos) + comprensión orientada al texto base: anáforas, inferencias, progresión temática.</p>
+      </div>
+      <div class="fori-day">
+        <span class="day-label">Jueves</span>
+        <p><strong>Lectura en parejas</strong> (lectura alterna, feedback mutuo, foco en prosodia) + comprensión profunda: preguntas inferenciales, predicciones, estados mentales.</p>
+      </div>
+      <div class="fori-day">
+        <span class="day-label">Viernes</span>
+        <p><strong>Comprensión profunda</strong>: síntesis, idea central, tema, esquema/visualización, resumen escrito. No es necesario releer el texto.</p>
+      </div>
+    </div>
+
+    <!-- RETOS -->
+    <h3>Retos para impulsar la intervención en fluidez</h3>
+    <p>Dos tipos de retos:</p>
+    <ul>
+      <li><strong>Seguimiento:</strong> mini-evaluación intermedia de fluidez, sobre todo con alumnado de riesgo.</li>
+      <li><strong>Entrenamiento:</strong> medida inicial → práctica semanal con meta → medida final.</li>
+    </ul>
+    <h4>Metas orientativas por nivel (PCM en texto)</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Curso</th><th>Meta PCM</th></tr></thead>
+        <tbody>
+          <tr><td>3.º EP</td><td>84 PCM</td></tr>
+          <tr><td>4.º EP</td><td>104 PCM</td></tr>
+          <tr><td>5.º EP</td><td>113 PCM</td></tr>
+          <tr><td>6.º EP</td><td>124 PCM</td></tr>
+          <tr><td>1.º ESO</td><td>134 PCM</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SECCIÓN 3 · COMPRENSIÓN                   -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="comprension">
+    <div class="section-header">
+      <span class="num">III</span>
+      <h2>Intervención en comprensión lectora</h2>
+    </div>
+
+    <h3>Qué es comprender (idea clave)</h3>
+    <p>La comprensión lectora implica procesos cognitivos y metacognitivos para construir el significado del texto, integrarlo con conocimientos previos y llegar a una comprensión profunda que facilite el aprendizaje. El modelo construcción-integración (Kintsch, 1998) distingue texto base (representación completa con relaciones explícitas e implícitas) y modelo de situación (integración con conocimiento previo).</p>
+
+    <h3>Once procesos implicados y sus dificultades</h3>
+    <details>
+      <summary>1 — Procesos léxicos y automatización</summary>
+      <div class="details-body"><p>Si decodificar consume recursos cognitivos, no queda capacidad para comprender. Solución: programa de fluidez lectora.</p></div>
+    </details>
+    <details>
+      <summary>2 — Vocabulario y conocimiento previo (nivel léxico-semántico)</summary>
+      <div class="details-body"><p>La pobreza léxica es determinante. Se deben trabajar redes de relaciones categoriales y asociativas entre palabras, ampliando esquemas de conocimiento previo.</p></div>
+    </details>
+    <details>
+      <summary>3 — Formar ideas simples (proposiciones) y macroproposiciones</summary>
+      <div class="details-body"><p>Pregunta clave: «¿qué dice el texto?; ¿de qué habla el autor en este fragmento?». Marcar los límites de cada parte de la secuencia ayuda a evitar la lectura palabra a palabra sin sentido.</p></div>
+    </details>
+    <details>
+      <summary>4 — Conocimientos previos (memoria a largo plazo)</summary>
+      <div class="details-body"><p>La limitación de conocimiento previo impide ampliar el marco textual. El profesorado puede introducir el texto activando la información que el alumnado no puede activar por sí solo.</p></div>
+    </details>
+    <details>
+      <summary>5 — Supresión de información irrelevante</summary>
+      <div class="details-body"><p>Se practica con textos que contienen abundante información irrelevante para enseñar a suprimir tachando lo no pertinente.</p></div>
+    </details>
+    <details>
+      <summary>6 — Progresión temática del texto</summary>
+      <div class="details-body"><p>Subrayar o colorear marcadores y dispositivos textuales que dan continuidad al texto (secuencia narrativa, línea argumental, orden descriptivo…).</p></div>
+    </details>
+    <details>
+      <summary>7 — Inferencias anafóricas</summary>
+      <div class="details-body"><p>Preguntas como «¿a qué se refiere "eso" en el texto?». Marcar antecedentes y elementos fóricos con el mismo color o unirlos con una línea.</p></div>
+    </details>
+    <details>
+      <summary>8 — Inferencias basadas en conocimientos previos</summary>
+      <div class="details-body"><p>Preguntas como «¿qué relación hay entre X e Y?; ¿por qué…?». Las preguntas literales no ayudan al alumnado a superar sus dificultades para inferir.</p></div>
+    </details>
+    <details>
+      <summary>9 — Construcción de macroideas</summary>
+      <div class="details-body"><p>Capacidad de síntesis: resumir de qué habla el párrafo en una frase. Se practica con textos que requieren eliminar lo irrelevante hasta quedarse con lo esencial.</p></div>
+    </details>
+    <details>
+      <summary>10 — Captar la estructura del texto y sintetizar</summary>
+      <div class="details-body"><p>Integrar ideas del texto en un resumen coherente que pueda formularse con palabras propias del alumnado.</p></div>
+    </details>
+    <details>
+      <summary>11 — Autorregulación (metacognición)</summary>
+      <div class="details-body"><p>Leer con una meta y volver atrás cuando no se comprende. Se trabaja con textos con información contradictoria o absurdos para activar mecanismos de autorregulación.</p></div>
+    </details>
+
+    <h3>Qué enseñar: las dos competencias nucleares</h3>
+    <p>El PRECOL focaliza en dos competencias que están en el corazón de la comprensión:</p>
+    <ol>
+      <li><strong>Competencia retórica (cohesión):</strong> habilidades para relacionar unidades del texto entre sí (anáforas, correferencias, marcadores, elipsis) para «no perder de quién/de qué se habla».</li>
+      <li><strong>Competencia inferencial (coherencia):</strong> construir significado nuevo conectando lo que dice el texto con conocimiento previo.</li>
+    </ol>
+    <p>Como soporte: <strong>memoria de trabajo</strong> (mantener y operar con información textual) y <strong>metacognición</strong> (leer con metas, persistir, autorregular).</p>
+
+    <h3>Cómo enseñar: 2 enfoques + 4 propuestas prácticas</h3>
+    <p>El documento diferencia dos acciones docentes:</p>
+    <ul>
+      <li><strong>Ayudar a comprender:</strong> guiar la comprensión de cada texto (metas, preguntas, pistas, conexión con conocimiento previo).</li>
+      <li><strong>Enseñar a comprender:</strong> instrucción explícita de componentes (anáforas, estructuras textuales…).</li>
+    </ul>
+
+    <h4>Propuesta 1 — Microtextos</h4>
+    <p>Para enseñar competencia retórica e inferencial. Se crea un banco colaborativo de microtextos clasificados por tipo: literales, inferenciales, razonamiento/memoria de trabajo, lectura con meta. La prueba de evaluación <strong>nunca debe usarse</strong> para el entrenamiento.</p>
+
+    <h4>Propuesta 2 — Organizar la lectura colectiva (3 episodios)</h4>
+    <ol>
+      <li><strong>Preparación:</strong> meta de lectura, vocabulario / conocimiento previo, anticipar estructura y procesos.</li>
+      <li><strong>Lectura:</strong> buscar alternativas a la lectura por turnos; decidir modalidad (silenciosa/voz alta), lectura por párrafos con diálogo, agrupamientos (eco, parejas, coral…).</li>
+      <li><strong>Construcción e integración:</strong> diálogo estratégico con preguntas y ayudas. Priorizar <em>ayudas regulatorias</em> (orientan sin dar la respuesta) sobre <em>ayudas internas</em> (que invaden el espacio del alumnado).</li>
+    </ol>
+
+    <h4>Propuesta 3 — Marcar, modelar y visualizar el texto</h4>
+    <ul>
+      <li><strong>*</strong> = inferencia necesaria.</li>
+      <li><strong>^</strong> = marcador, dispositivo referencial o anáfora.</li>
+      <li><strong>=</strong> = vocabulario que necesita asociación.</li>
+    </ul>
+    <p>Secuencia: marcar el texto → modelado docente con «pensamiento en voz alta» → práctica del alumnado (parejas / grupos / estaciones) → visualización / esquema → preguntas + resumen.</p>
+
+    <h4>Propuesta 4 — Buenas preguntas (tipología)</h4>
+    <ol>
+      <li>Preguntas literales.</li>
+      <li>Preguntas sobre vocabulario y relaciones semánticas.</li>
+      <li>Preguntas para extraer ideas del texto.</li>
+      <li>Preguntas sobre la progresión temática.</li>
+      <li>Preguntas para construir el texto base (anáforas / inferencias).</li>
+      <li>Preguntas para suprimir y resumir.</li>
+      <li>Preguntas para identificar el tema.</li>
+      <li>Preguntas para integrar con conocimiento previo.</li>
+      <li>Preguntas sobre predicciones y variaciones.</li>
+      <li>Inferencias elaborativas (qué, quién, cuándo, cómo, dónde…).</li>
+    </ol>
+
+    <h3>Reto de aprendizaje: relaciones anafóricas</h3>
+    <p>Una relación anafórica vincula dos términos del texto; el segundo (elemento fórico: pronombre, demostrativo, adverbio…) hace alusión al primero (antecedente). La comprensión de estas relaciones se adquiere a lo largo de Primaria.</p>
+    <p><strong>Progresión didáctica del reto:</strong></p>
+    <ol>
+      <li>Aplicar reto inicial y corregir.</li>
+      <li>Explicar explícitamente qué es una relación anafórica con ejemplos de distancia mínima.</li>
+      <li>Aumentar paulatinamente la distancia entre antecedente y elemento fórico.</li>
+      <li>Apoyo visual: colorear antecedente (azul) y fórico (amarillo), unir con línea, contar distancia.</li>
+      <li>Practicar con textos; después introducir casos competitivos («este/aquel»).</li>
+      <li>Repetir el reto hasta alcanzar la meta con feedback, devolviendo siempre al texto sin resolver oralmente la respuesta.</li>
+    </ol>
+    <div class="callout warning">
+      <p><strong>Regla clave:</strong> El profesorado nunca debe resolver oralmente la dificultad de comprensión; siempre debe devolver al alumnado al texto para que relea y revise su respuesta.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SECCIÓN 4 · CURRÍCULO INFANTIL            -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="curriculo-infantil">
+    <div class="section-header">
+      <span class="num">IV</span>
+      <h2>Currículo de Educación Infantil</h2>
+    </div>
+
+    <h3>Objetivos de etapa</h3>
+    <p>La Educación Infantil contribuirá a desarrollar las capacidades que permitan al alumnado: conocer su cuerpo y el de los otros; observar y explorar su entorno; adquirir autonomía; desarrollar capacidades emocionales y afectivas; relacionarse en igualdad y convivencia pacífica; desarrollar habilidades comunicativas en diferentes lenguajes; iniciarse en lógico-matemáticas, lectura y escritura; y promover normas de igualdad entre hombres y mujeres.</p>
+
+    <h3>Áreas de Educación Infantil</h3>
+    <ul>
+      <li><strong>Crecimiento en Armonía</strong></li>
+      <li><strong>Descubrimiento y Exploración del Entorno</strong></li>
+      <li><strong>Comunicación y Representación de la Realidad</strong></li>
+    </ul>
+
+    <h3>Evaluación</h3>
+    <p>La evaluación es <strong>global, continua y formativa</strong>. Las principales fuentes de información son la observación directa y sistemática y las entrevistas con familias. Orientada a identificar condiciones iniciales, ritmo y características de evolución, tomando como referencia los criterios de evaluación de cada área.</p>
+
+    <h3>Competencias clave (Educación Infantil)</h3>
+    <div class="comp-grid">
+      <div class="comp-card"><span class="comp-code">CCL</span><h4>Comunicación Lingüística</h4><p>Intercambios comunicativos con complejidad creciente; oralidad como vehículo principal; acercamiento a la literatura infantil.</p></div>
+      <div class="comp-card"><span class="comp-code">CP</span><h4>Plurilingüe</h4><p>Contacto con lenguas distintas a la familiar; actitudes de respeto y aprecio por la diversidad lingüística.</p></div>
+      <div class="comp-card"><span class="comp-code">STEM</span><h4>Matemática / Ciencia / Tecnología</h4><p>Destrezas lógico-matemáticas y primeros pasos hacia el pensamiento científico a través del juego y la manipulación.</p></div>
+      <div class="comp-card"><span class="comp-code">CD</span><h4>Digital</h4><p>Inicio de la alfabetización digital: acceso a información, comunicación y creación con medios digitales de forma segura y responsable.</p></div>
+      <div class="comp-card"><span class="comp-code">CPSAA</span><h4>Personal, Social y Aprender a Aprender</h4><p>Reconocimiento y control progresivo de emociones; aprendizaje en cooperación; autonomía y autorregulación.</p></div>
+      <div class="comp-card"><span class="comp-code">CC</span><h4>Ciudadana</h4><p>Modelos positivos de respeto, equidad, inclusión y convivencia. Comprensión de identidad y cultura propia.</p></div>
+      <div class="comp-card"><span class="comp-code">CE</span><h4>Emprendedora</h4><p>Curiosidad, iniciativa, imaginación. Bases del pensamiento estratégico y resolución de problemas desde las primeras edades.</p></div>
+      <div class="comp-card"><span class="comp-code">CCEC</span><h4>Conciencia y Expresión Culturales</h4><p>Expresión creativa de ideas a través de diversos lenguajes; acercamiento a manifestaciones culturales y artísticas.</p></div>
+    </div>
+
+    <h3>Metodología — Ideas-fuerza</h3>
+    <ul>
+      <li><strong>Clima de bienestar:</strong> ambiente cálido, seguro y acogedor.</li>
+      <li><strong>Ambiente como agente educativo:</strong> espacios, materiales y tiempos que faciliten acción, experimentación, juego, comunicación y autonomía.</li>
+      <li><strong>Enfoque globalizador:</strong> aprendizaje por conexiones entre lo nuevo y lo aprendido.</li>
+      <li><strong>Juego y actividad motriz como eje,</strong> sin estereotipos sexistas.</li>
+      <li><strong>Diversidad y DUA:</strong> Diseño Universal para el Aprendizaje para garantizar equidad e inclusión.</li>
+      <li><strong>Cooperación con familias</strong> y valor de las rutinas (alimentación, higiene, descanso).</li>
+    </ul>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SECCIÓN 5 · DESCRIPTORES OPERATIVOS       -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="descriptores">
+    <div class="section-header">
+      <span class="num">V</span>
+      <h2>Descriptores operativos de las competencias clave</h2>
+    </div>
+    <p>Los descriptores del perfil de salida conectan las competencias clave con los criterios de evaluación de cada área. A continuación se recogen los descriptores de las competencias más vinculadas a la competencia lectora.</p>
+
+    <h3>CCL — Competencia en Comunicación Lingüística</h3>
+    <ul>
+      <li><strong>CCL1.</strong> Expresa hechos, conceptos, pensamientos u opiniones de forma oral, escrita, signada o multimodal, con claridad y adecuación; participa en interacciones con actitud cooperativa y respetuosa.</li>
+      <li><strong>CCL2.</strong> Comprende, interpreta y valora textos orales, escritos, signados o multimodales sencillos de los ámbitos personal, social y educativo.</li>
+      <li><strong>CCL3.</strong> Localiza, selecciona y contrasta información sencilla de dos o más fuentes, evaluando fiabilidad y utilidad, y la comunica adoptando un punto de vista creativo, crítico y personal.</li>
+      <li><strong>CCL4.</strong> Lee obras diversas adecuadas a su madurez; reconoce el patrimonio literario como fuente de disfrute y aprendizaje; crea textos de intención literaria a partir de modelos.</li>
+      <li><strong>CCL5.</strong> Pone sus prácticas comunicativas al servicio de la convivencia democrática; detecta usos discriminatorios y abuso de poder a través de la palabra.</li>
+    </ul>
+
+    <h3>Otras competencias clave relevantes</h3>
+    <div class="comp-grid">
+      <div class="comp-card"><span class="comp-code">CP1–3</span><h4>Plurilingüe</h4><p>Usa otras lenguas para necesidades comunicativas sencillas; valora y respeta la diversidad lingüística y cultural.</p></div>
+      <div class="comp-card"><span class="comp-code">STEM1–2</span><h4>Matemática/CTIM</h4><p>Métodos inductivos/deductivos; pensamiento científico para entender fenómenos del entorno.</p></div>
+      <div class="comp-card"><span class="comp-code">CD1–5</span><h4>Digital</h4><p>Búsquedas guiadas; creación de contenidos digitales; participación segura en entornos virtuales supervisados.</p></div>
+      <div class="comp-card"><span class="comp-code">CPSAA1–5</span><h4>Personal / Social / Aprender a Aprender</h4><p>Gestión emocional; hábitos de vida saludable; cooperación; reflexión y autorregulación del aprendizaje.</p></div>
+      <div class="comp-card"><span class="comp-code">CC1–4</span><h4>Ciudadana</h4><p>Procesos históricos y normas de convivencia; participación democrática; respeto a los derechos humanos y diversidad cultural.</p></div>
+      <div class="comp-card"><span class="comp-code">CE1–3</span><h4>Emprendedora</h4><p>Identifica necesidades y propone soluciones originales; planifica tareas y coopera en equipo con actitud creativa.</p></div>
+      <div class="comp-card"><span class="comp-code">CCEC1–4</span><h4>Conciencia y Expresión Culturales</h4><p>Aprecia el patrimonio cultural y artístico; expresa ideas con creatividad a través de distintos lenguajes artísticos.</p></div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SECCIÓN 6 · COMPETENCIAS ESPECÍFICAS LENGUA -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="competencias-lengua">
+    <div class="section-header">
+      <span class="num">VI</span>
+      <h2>Competencias específicas de Lengua y criterios de evaluación</h2>
+    </div>
+
+    <h3>CE1 — Diversidad lingüística</h3>
+    <p>Reconocer la diversidad lingüística del mundo a partir de la realidad plurilingüe de España para favorecer la reflexión interlingüística, identificar y rechazar estereotipos, y valorar la diversidad como riqueza cultural.</p>
+    <details><summary>Criterios por ciclo</summary><div class="details-body">
+      <p><strong>1.º ciclo:</strong> Mostrar interés y respeto; reconocer, de manera acompañada, algunos prejuicios lingüísticos frecuentes.</p>
+      <p><strong>2.º ciclo:</strong> Identificar, con cierta autonomía, prejuicios y estereotipos; aportar alternativas.</p>
+      <p><strong>3.º ciclo:</strong> Detectar, con autonomía creciente, prejuicios; valorar la diversidad como riqueza cultural.</p>
+    </div></details>
+
+    <h3>CE2 — Comprensión oral y multimodal</h3>
+    <p>Comprender e interpretar textos orales y multimodales identificando el sentido general y la información más relevante para construir conocimiento y responder a necesidades comunicativas.</p>
+    <details><summary>Criterios por ciclo</summary><div class="details-body">
+      <p><strong>Todos los ciclos:</strong> Comprender el sentido de textos orales y multimodales sencillos, reconociendo ideas principales y mensajes explícitos e implícitos, con valoración progresivamente crítica del contenido y de los elementos no verbales.</p>
+    </div></details>
+
+    <h3>CE3 — Producción oral y multimodal</h3>
+    <p>Producir textos orales y multimodales con coherencia, claridad y registro adecuados para expresar ideas, construir conocimiento, establecer vínculos y participar en interacciones variadas.</p>
+
+    <h3>CE4 — Comprensión lectora</h3>
+    <p>Comprender e interpretar textos escritos y multimodales reconociendo el sentido global, las ideas principales y la información explícita e implícita para adquirir conocimiento y responder a necesidades comunicativas diversas.</p>
+    <details><summary>Criterios por ciclo</summary><div class="details-body">
+      <p><strong>1.º ciclo:</strong> Comprender sentido global e información relevante de textos cercanos con estrategias básicas de comprensión; analizar aspectos formales de textos sencillos.</p>
+      <p><strong>2.º ciclo:</strong> Realizar inferencias; iniciarse en la evaluación de fiabilidad.</p>
+      <p><strong>3.º ciclo:</strong> Comprender textos más complejos; evaluar calidad, fiabilidad e idoneidad en función del propósito de lectura.</p>
+    </div></details>
+
+    <h3>CE5 — Producción escrita</h3>
+    <p>Producir textos escritos y multimodales con corrección gramatical y ortográfica básica, aplicando estrategias de planificación, textualización, revisión y edición para construir conocimiento.</p>
+
+    <h3>CE6 — Búsqueda y tratamiento de la información</h3>
+    <p>Buscar, seleccionar y contrastar información de dos o más fuentes evaluando su fiabilidad y reconociendo riesgos de manipulación para transformarla en conocimiento.</p>
+
+    <h3>CE7 — Lectura autónoma y hábito lector</h3>
+    <p>Leer obras diversas seleccionadas atendiendo a gustos e intereses para construir la identidad lectora y fomentar el gusto por la lectura como fuente de placer y disfrute social.</p>
+
+    <h3>CE8 — Educación literaria</h3>
+    <p>Leer, interpretar y analizar obras o fragmentos literarios identificando el género y sus convenciones para iniciarse en el reconocimiento de la literatura como manifestación artística.</p>
+
+    <h3>CE9 — Reflexión sobre la lengua</h3>
+    <p>Reflexionar sobre el lenguaje en procesos de producción y comprensión de textos usando terminología elemental adecuada para mejorar las destrezas comunicativas.</p>
+
+    <h3>CE10 — Uso ético del lenguaje</h3>
+    <p>Poner las prácticas comunicativas al servicio de la convivencia democrática, usando un lenguaje no discriminatorio y detectando abusos de poder para un uso eficaz y ético del lenguaje.</p>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SECCIÓN 7 · SABERES BÁSICOS LENGUA        -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="saberes-lengua">
+    <div class="section-header">
+      <span class="num">VII</span>
+      <h2>Saberes básicos de Lengua (por ciclos)</h2>
+    </div>
+    <p>Los saberes básicos se organizan en cuatro bloques en todos los ciclos: <strong>A</strong> (Las lenguas y sus hablantes) · <strong>B</strong> (Comunicación) · <strong>C</strong> (Educación literaria) · <strong>D</strong> (Reflexión sobre la lengua).</p>
+
+    <h3>1.º Ciclo</h3>
+    <details><summary>Bloque A — Lenguas y hablantes</summary><div class="details-body">
+      <p>Biografía lingüística personal y mapa del aula; diversidad etnocultural y lingüística de Asturias; identificación (con acompañamiento) de prejuicios lingüísticos; uso de lenguaje no sexista y no discriminatorio.</p>
+    </div></details>
+    <details><summary>Bloque B — Comunicación</summary><div class="details-body">
+      <p>Componentes del acto comunicativo; tipologías textuales (narración, descripción, diálogo); propiedades textuales elementales; géneros discursivos del ámbito asturiano; interacción oral informal; comprensión e identificación de ideas principales; producción oral con pronunciación y entonación; comprensión lectora con estrategias elementales antes/durante/después; producción escrita con coherencia; alfabetización mediática básica.</p>
+    </div></details>
+    <details><summary>Bloque C — Educación literaria</summary><div class="details-body">
+      <p>Lectura acompañada de literatura infantil organizada en itinerarios (especial atención a autoría asturiana y escritoras); interpretación compartida a través de conversaciones literarias; relación entre elementos constitutivos y sentido de la obra; creación de textos de intención literaria a partir de modelos; biblioteca de aula como espacio coeducativo.</p>
+    </div></details>
+    <details><summary>Bloque D — Reflexión sobre la lengua</summary><div class="details-body">
+      <p>Generalizaciones sobre tipos de palabras y relaciones de concordancia; diferencias entre lengua oral y escrita; procedimientos elementales de vocabulario; relación entre intención comunicativa y modalidad oracional; mecanismos elementales de coherencia y cohesión (conectores temporales); signos básicos de puntuación.</p>
+    </div></details>
+
+    <h3>2.º Ciclo</h3>
+    <details><summary>Bloque A — Lenguas y hablantes</summary><div class="details-body">
+      <p>Mapa lingüístico del centro; diversidad lingüística y etnocultural de Asturias; identificación de prejuicios; lenguaje no sexista y no discriminatorio.</p>
+    </div></details>
+    <details><summary>Bloque B — Comunicación</summary><div class="details-body">
+      <p>Componentes del hecho comunicativo (situación, participantes, propósito, canal); tipologías (narración, descripción, diálogo, exposición); estrategias básicas de coherencia y cohesión; géneros discursivos del ámbito asturiano; interacción oral formal e informal; comprensión oral con inferencias; producción oral con elementos prosódicos básicos; comprensión lectora con inferencias; producción escrita con ortografía reglada básica; búsqueda guiada de información en fuentes variadas.</p>
+    </div></details>
+    <details><summary>Bloque C — Educación literaria</summary><div class="details-body">
+      <p>Literatura infantil universal en itinerarios lectores; interpretación y análisis de elementos constitutivos y recursos expresivos; construcción de la identidad lectora; valoración argumentada de obras; creación de textos con intención literaria de manera libre o a partir de modelos.</p>
+    </div></details>
+    <details><summary>Bloque D — Reflexión sobre la lengua</summary><div class="details-body">
+      <p>Relaciones entre sustantivos, adjetivos y verbos; lengua como sistema (sonidos, palabras, oraciones, textos); vocabulario (familia léxica y semántica en el dominio lingüístico asturiano); mecanismos de coherencia: repeticiones, sinónimos, orden de párrafos; puntuación con intención comunicativa; uso guiado de diccionario.</p>
+    </div></details>
+
+    <h3>3.º Ciclo</h3>
+    <details><summary>Bloque A — Lenguas y hablantes</summary><div class="details-body">
+      <p>Mapa lingüístico del entorno local; diversidad etnocultural como herramienta de reflexión; estrategias de identificación de prejuicios; lenguaje no sexista e igualitario.</p>
+    </div></details>
+    <details><summary>Bloque B — Comunicación</summary><div class="details-body">
+      <p>Interacciones entre componentes (situación, participantes, propósito, canal, registro); tipologías ampliadas con exposición y argumentación con perspectiva de género; propiedad textual: coherencia, cohesión y adecuación; redes sociales y sus riesgos; comprensión oral con valoración crítica; producción oral con autonomía creciente; comprensión lectora valorativa; producción escrita con ortografía reglada, cohesión y adecuación; alfabetización mediática con valoración crítica y autonomía progresiva.</p>
+    </div></details>
+    <details><summary>Bloque C — Educación literaria</summary><div class="details-body">
+      <p>Lectura progresivamente autónoma; análisis de elementos básicos del género literario; estrategias de interpretación con creciente autonomía; relación con otras manifestaciones artísticas y culturales asturianas; valoración crítica elemental; creación con atención al estilo propio vinculado a la literatura castellana hecha en Asturias.</p>
+    </div></details>
+    <details><summary>Bloque D — Reflexión sobre la lengua</summary><div class="details-body">
+      <p>Generalizaciones sobre aspectos lingüísticos mediante observación y comparación; lengua como sistema multinivel; mecanismos léxicos de formación de palabras; mecanismos de cohesión: sustituciones pronominales y correlación temporal verbal; estrategias de acentuación; puntuación con intención comunicativa; diccionario con autonomía progresiva.</p>
+    </div></details>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SECCIÓN 8 · ORAL AL ESCRITO               -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="oral-escrito">
+    <div class="section-header">
+      <span class="num">VIII</span>
+      <h2>Del lenguaje oral al lenguaje escrito</h2>
+    </div>
+    <p>Ideas clave de formación para la prevención temprana de dificultades lectoras.</p>
+
+    <h3>Marco teórico común</h3>
+    <p>La lectura es una actividad compleja. Se distingue entre:</p>
+    <ul>
+      <li><strong>Decodificación / identificación de palabras</strong> (aprender a leer: reconocer palabras y acceder al significado).</li>
+      <li><strong>Comprensión lectora</strong> (leer para aprender: elaborar una representación mental coherente del texto).</li>
+    </ul>
+    <div class="callout">
+      <p><strong>Principio clave:</strong> En Primaria, la comprensión lectora está relacionada con la automatización en la identificación de palabras. «Si para leer tengo que pensar, no puedo pensar en lo que leo.»</p>
+    </div>
+
+    <h3>Base fonológica y principio alfabético</h3>
+    <p>El código escrito es <strong>fonográfico</strong>: exige conciencia de fonemas (conciencia fonémica) y conexión eficaz letra–sonido.</p>
+    <p>Principios orientativos de la conciencia fonológica:</p>
+    <ul>
+      <li>Antes sílaba que fonema.</li>
+      <li>Identificar es más fácil que manipular.</li>
+      <li>Añadir/omitir más fácil que sustituir/invertir.</li>
+      <li>Posición inicial/final más fácil que medial.</li>
+      <li>Palabras cortas más fáciles.</li>
+      <li>Fonemas «alargables» ayudan.</li>
+      <li>Manipulaciones clave: identificación, síntesis y segmentación fonémica.</li>
+    </ul>
+
+    <h3>Vocabulario como facilitador</h3>
+    <p>Se deben trabajar <strong>amplitud y profundidad</strong> del vocabulario (significado, familia, usos en contextos) enseñándolo explícitamente con gestos/imágenes, exposición repetida y tareas fonológicas asociadas.</p>
+
+    <h3>Pautas instruccionales</h3>
+    <ul>
+      <li><strong>Enseñanza explícita:</strong> modelado, pensamiento en voz alta, feedback específico (yo hago → nosotros → tú haces).</li>
+      <li><strong>Enseñanza sistemática:</strong> secuenciar con progresión racional; práctica repetida de decodificación/codificación.</li>
+      <li><strong>Tiempo diario:</strong> grupos pequeños para alumnado en riesgo y entornos desfavorecidos.</li>
+    </ul>
+  </section>
+
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="doc-footer">
+    <p>Castejón, L. y Menéndez, C. (2025). <em>Programa de refuerzo de la competencia lectora (PRECOL).</em> Principado de Asturias / Universidad de Oviedo.</p>
+  </footer>
+
+</div>
+</body>
+</html>
 <p>
 Esta página contiene el currículo, competencias, saberes básicos y
 fundamentos didácticos para la enseñanza del lenguaje oral y escrito
